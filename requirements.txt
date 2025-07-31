@@ -1,0 +1,25 @@
+# BeraMind Security Scanner Dependencies
+
+# Core LangChain and Ollama
+langchain>=0.1.0
+langchain-community>=0.0.10
+langchain-ollama>=0.1.0
+
+# Git operations
+gitpython>=3.1.40
+
+# HTTP requests
+requests>=2.31.0
+
+# Environment variables
+python-dotenv>=1.0.0
+
+# PDF generation
+reportlab>=3.6.0
+
+# CLI utilities (argparse is built-in since Python 3.2+)
+# Web framework (optional, for future web UI)
+flask>=2.3.0
+jinja2>=3.1.2
+werkzeug>=2.3.7
+click>=8.1.7

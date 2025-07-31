@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results - BeraMind</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'gradient': 'gradient 8s ease infinite',
+                        'bounce-slow': 'bounce 3s infinite',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 bg-fixed">
+    <!-- Navigation -->
+    <nav class="bg-white/10 backdrop-blur-lg border-b border-white/20 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="text-2xl">🔍</div>
+                    <span class="text-xl font-bold text-white">BeraMind</span>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="/" class="text-white/80 hover:text-white transition-colors duration-200 flex items-center space-x-2">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>New Analysis</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% if results.error %}
+        <!-- Error Display -->
+        <div class="max-w-2xl mx-auto">
+            <div class="bg-red-500/10 backdrop-blur-lg rounded-3xl border border-red-500/20 p-8 text-center">
+                <div class="text-6xl text-red-400 mb-6">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-white mb-4">Analysis Error</h2>
+                <p class="text-white/70 mb-8">{{ results.error }}</p>
+                <a href="/" class="inline-flex items-center space-x-2 bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200">
+                    <i class="fas fa-home"></i>
+                    <span>Back to Home</span>
+                </a>
+            </div>
+        </div>
+        {% elif results.summary %}
+        <!-- Header with Summary -->
+        <div class="mb-8">
+            <div class="bg-white/10 backdrop-blur-lg rounded-3xl border border-white/20 p-8">
+                <div class="flex flex-col lg:flex-row items-center space-y-6 lg:space-y-0 lg:space-x-8">
+                    <div class="text-center lg:text-left">
+                        <div class="text-6xl font-bold mb-2 {% if results.summary.security_score >= 80 %}text-green-400{% elif results.summary.security_score >= 60 %}text-yellow-400{% elif results.summary.security_score >= 40 %}text-orange-400{% else %}text-red-400{% endif %}">
+                            {{ results.summary.security_score }}/100
+                        </div>
+                        <p class="text-white/70">Security Score</p>
+                    </div>
+                    <div class="flex-1">
+                        <h1 class="text-4xl font-bold text-white mb-4">Security Analysis Report</h1>
+                        <div class="space-y-2 text-white/80">
+                            <p><span class="font-semibold">Target:</span> {{ results.summary.target }}</p>
+                            <p><span class="font-semibold">Date:</span> {{ results.summary.scan_date if results.summary.scan_date else 'N/A' }}</p>
+                            <p><span class="font-semibold">Vulnerabilities found:</span> {{ results.summary.total_vulnerabilities }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Severity Statistics -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div class="bg-gradient-to-br from-red-500/20 to-red-600/10 backdrop-blur-lg rounded-2xl border border-red-500/20 p-6 text-center">
+                <div class="text-3xl font-bold text-red-400 mb-2">{{ results.summary.severity_breakdown.critical or 0 }}</div>
+                <p class="text-white/80 font-medium">Critical</p>
+            </div>
+            <div class="bg-gradient-to-br from-orange-500/20 to-orange-600/10 backdrop-blur-lg rounded-2xl border border-orange-500/20 p-6 text-center">
+                <div class="text-3xl font-bold text-orange-400 mb-2">{{ results.summary.severity_breakdown.high or 0 }}</div>
+                <p class="text-white/80 font-medium">High</p>
+            </div>
+            <div class="bg-gradient-to-br from-yellow-500/20 to-yellow-600/10 backdrop-blur-lg rounded-2xl border border-yellow-500/20 p-6 text-center">
+                <div class="text-3xl font-bold text-yellow-400 mb-2">{{ results.summary.severity_breakdown.medium or 0 }}</div>
+                <p class="text-white/80 font-medium">Medium</p>
+            </div>
+            <div class="bg-gradient-to-br from-green-500/20 to-green-600/10 backdrop-blur-lg rounded-2xl border border-green-500/20 p-6 text-center">
+                <div class="text-3xl font-bold text-green-400 mb-2">{{ results.summary.severity_breakdown.low or 0 }}</div>
+                <p class="text-white/80 font-medium">Low</p>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <div class="bg-white/10 backdrop-blur-lg rounded-3xl border border-white/20 p-6">
+                <h3 class="text-xl font-bold text-white mb-6 flex items-center space-x-2">
+                    <i class="fas fa-chart-pie text-cyan-400"></i>
+                    <span>Severity Distribution</span>
+                </h3>
+                <canvas id="severityChart"></canvas>
+            </div>
+            <div class="bg-white/10 backdrop-blur-lg rounded-3xl border border-white/20 p-6">
+                <h3 class="text-xl font-bold text-white mb-6 flex items-center space-x-2">
+                    <i class="fas fa-chart-bar text-purple-400"></i>
+                    <span>Vulnerability Types</span>
+                </h3>
+                <canvas id="typeChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Recommendations -->
+        {% if results.recommendations %}
+        <div class="mb-8">
+            <div class="bg-white/10 backdrop-blur-lg rounded-3xl border border-white/20 p-6">
+                <h3 class="text-xl font-bold text-white mb-6 flex items-center space-x-2">
+                    <i class="fas fa-lightbulb text-yellow-400"></i>
+                    <span>AI Recommendations</span>
+                </h3>
+                <div class="space-y-3">
+                    {% for recommendation in results.recommendations %}
+                    <div class="flex items-start space-x-3 bg-white/5 rounded-xl p-4">
+                        <i class="fas fa-check-circle text-green-400 mt-1"></i>
+                        <span class="text-white/80">{{ recommendation }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Vulnerabilities List -->
+        <div class="bg-white/10 backdrop-blur-lg rounded-3xl border border-white/20 p-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 space-y-4 sm:space-y-0">
+                <h3 class="text-xl font-bold text-white flex items-center space-x-2">
+                    <i class="fas fa-bug text-red-400"></i>
+                    <span>Detected Vulnerabilities</span>
+                </h3>
+                <div class="flex space-x-2">
+                    <button onclick="exportResults('json')" 
+                            class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg border border-white/20 transition-colors duration-200 flex items-center space-x-2">
+                        <i class="fas fa-download"></i>
+                        <span>JSON</span>
+                    </button>
+                    <button onclick="exportResults('pdf')" 
+                            class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg border border-white/20 transition-colors duration-200 flex items-center space-x-2">
+                        <i class="fas fa-file-pdf"></i>
+                        <span>PDF</span>
+                    </button>
+                </div>
+            </div>
+            
+            {% if results.vulnerabilities %}
+                <div class="space-y-6">
+                    {% for vuln in results.vulnerabilities %}
+                    <div class="bg-white/5 rounded-2xl border-l-4 {% if vuln.severity == 'critical' %}border-red-500{% elif vuln.severity == 'high' %}border-orange-500{% elif vuln.severity == 'medium' %}border-yellow-500{% else %}border-green-500{% endif %} p-6">
+                        <div class="flex flex-col lg:flex-row lg:items-start space-y-4 lg:space-y-0 lg:space-x-6">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-3 mb-3">
+                                    <span class="px-3 py-1 rounded-full text-xs font-semibold {% if vuln.severity == 'critical' %}bg-red-500 text-white{% elif vuln.severity == 'high' %}bg-orange-500 text-white{% elif vuln.severity == 'medium' %}bg-yellow-500 text-black{% else %}bg-green-500 text-white{% endif %}">
+                                        {{ (vuln.severity or 'LOW').upper() }}
+                                    </span>
+                                    <h4 class="text-lg font-semibold text-white">
+                                        {{ (vuln.type or 'unknown').replace('_', ' ').title() }}
+                                    </h4>
+                                </div>
+                                <p class="text-white/80 mb-3">{{ vuln.description or vuln.message or 'No description available' }}</p>
+                                {% if vuln.file %}
+                                <div class="flex items-center space-x-2 text-white/60 text-sm">
+                                    <i class="fas fa-file-code"></i>
+                                    <span>{{ vuln.file }}</span>
+                                    {% if vuln.line %}
+                                    <span class="text-white/40">•</span>
+                                    <span>line {{ vuln.line }}</span>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% if vuln.code %}
+                            <div class="lg:w-1/3">
+                                <div class="bg-black/20 rounded-lg p-4 border border-white/10">
+                                    <code class="text-green-400 text-sm">{{ vuln.code }}</code>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Enhanced Code Display -->
+                        {% if vuln.code or vuln.code_context %}
+                        <div class="mt-6">
+                            <h5 class="text-white font-semibold mb-3 flex items-center space-x-2">
+                                <i class="fas fa-code text-cyan-400"></i>
+                                <span>Code Context</span>
+                            </h5>
+                            <div class="bg-black/30 rounded-xl p-4 border border-white/10 overflow-x-auto">
+                                <pre><code class="language-{{ vuln.file.split('.')[-1] if vuln.file else 'text' }} text-sm">{% if vuln.code_context %}{{ vuln.code_context }}{% else %}{{ vuln.code }}{% endif %}</code></pre>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-16">
+                    <div class="text-6xl text-green-400 mb-6 animate-bounce-slow">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4">No Vulnerabilities Detected!</h3>
+                    <p class="text-white/70">Your code follows security best practices. Great job!</p>
+                </div>
+            {% endif %}
+        </div>
+        {% else %}
+        <!-- No results case -->
+        <div class="max-w-2xl mx-auto">
+            <div class="bg-white/10 backdrop-blur-lg rounded-3xl border border-white/20 p-8 text-center">
+                <div class="text-6xl text-blue-400 mb-6">
+                    <i class="fas fa-question-circle"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-white mb-4">Results Not Available</h2>
+                <p class="text-white/70 mb-8">Analysis results are not available or corrupted.</p>
+                <a href="/" class="inline-flex items-center space-x-2 bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200">
+                    <i class="fas fa-home"></i>
+                    <span>Back to Home</span>
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if results.summary %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Charts data
+            const severityData = {
+                critical: {{ results.summary.severity_breakdown.critical or 0 }},
+                high: {{ results.summary.severity_breakdown.high or 0 }},
+                medium: {{ results.summary.severity_breakdown.medium or 0 }},
+                low: {{ results.summary.severity_breakdown.low or 0 }}
+            };
+
+            // Severity Chart (Donut)
+            const severityCtx = document.getElementById('severityChart').getContext('2d');
+            new Chart(severityCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Critical', 'High', 'Medium', 'Low'],
+                    datasets: [{
+                        data: [severityData.critical, severityData.high, severityData.medium, severityData.low],
+                        backgroundColor: ['#dc3545', '#fd7e14', '#ffc107', '#20c997'],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Count vulnerability types
+            const typeData = {};
+            {% for vuln in results.vulnerabilities %}
+            const type{{ loop.index }} = '{{ (vuln.type or "unknown").replace("_", " ").title() }}';
+            typeData[type{{ loop.index }}] = (typeData[type{{ loop.index }}] || 0) + 1;
+            {% endfor %}
+
+            // Type Chart (Bar)
+            const typeCtx = document.getElementById('typeChart').getContext('2d');
+            new Chart(typeCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(typeData),
+                    datasets: [{
+                        label: 'Number of vulnerabilities',
+                        data: Object.values(typeData),
+                        backgroundColor: '#667eea',
+                        borderColor: '#5a67d8',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // Chart styling for dark theme
+            Chart.defaults.color = '#ffffff80';
+            Chart.defaults.borderColor = '#ffffff20';
+        });
+
+        function exportResults(format) {
+            window.open('/export/{{ scan_id }}/' + format, '_blank');
+        }
+    </script>
+    {% endif %}
+</body>
+</html>

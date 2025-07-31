@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis in Progress - BeraMind</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'gradient': 'gradient 8s ease infinite',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 bg-fixed">
+    <!-- Navigation -->
+    <nav class="bg-white/10 backdrop-blur-lg border-b border-white/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="text-2xl">🔍</div>
+                    <span class="text-xl font-bold text-white">BeraMind</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="bg-white/10 backdrop-blur-lg rounded-3xl border border-white/20 p-8">
+            <div class="text-center mb-8">
+                <div class="relative inline-flex items-center justify-center w-20 h-20 mb-6">
+                    <div class="absolute inset-0 rounded-full border-4 border-cyan-500/30"></div>
+                    <div class="absolute inset-0 rounded-full border-4 border-t-cyan-500 animate-spin"></div>
+                    <i class="fas fa-brain text-2xl text-white"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-white mb-2" id="progressTitle">AI Analysis in Progress...</h1>
+                <p class="text-white/70 mb-2" id="progressSubtitle">Analyzing your code for security vulnerabilities</p>
+                <p class="text-white/50 text-sm" id="modelInfo">Using AI Model: <span id="currentModel">Loading...</span></p>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="mb-8">
+                <div class="bg-white/10 rounded-full h-4 overflow-hidden">
+                    <div class="bg-gradient-to-r from-cyan-500 to-purple-500 h-full rounded-full transition-all duration-500" 
+                         id="progressBar" style="width: 0%"></div>
+                </div>
+                <div class="flex justify-between text-white/60 text-sm mt-2">
+                    <span id="progressText">Initializing...</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+            </div>
+            
+            <!-- Current Activity -->
+            <div class="bg-white/5 rounded-2xl p-6 mb-8">
+                <div class="flex items-start space-x-4">
+                    <div class="animate-spin mt-1">
+                        <i class="fas fa-cog text-cyan-400"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-white font-semibold mb-2" id="currentActivity">Initializing AI scanner...</h4>
+                        <p class="text-white/60 text-sm" id="activityDetails">Setting up the environment and loading AI model...</p>
+                        <div class="mt-3 space-y-1" id="detailedLogs">
+                            <div class="text-xs text-white/50">• Starting BeraMind security scanner</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Real-time Logs -->
+         <!--    <div class="bg-black/30 rounded-2xl p-6 mb-8 border border-white/10">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-white flex items-center space-x-2">
+                        <i class="fas fa-terminal text-green-400"></i>
+                        <span>Live Analysis Log</span>
+                    </h3>
+                    <button onclick="toggleAutoScroll()" id="autoScrollBtn" 
+                            class="text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-1 rounded-lg border border-white/20 transition-colors duration-200">
+                        <i class="fas fa-arrows-alt-v mr-1"></i>
+                        Auto-scroll: ON
+                    </button>
+                </div>
+                <div class="h-48 overflow-y-auto bg-black/40 rounded-lg p-4 font-mono text-sm" id="logContainer">
+                    <div class="text-green-400" id="logContent">
+                        <div class="text-white/50">[00:00] Starting BeraMind AI Security Scanner...</div>
+                    </div>
+                </div>
+            </div> -->
+            
+            <!-- Progress Steps and Statistics -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-1">
+                    <h3 class="text-lg font-semibold text-white mb-4">Analysis Steps</h3>
+                    <div class="space-y-3" id="progressSteps">
+                        <div class="flex items-center space-x-3 p-3 rounded-lg bg-white/5" id="step-init">
+                            <i class="fas fa-circle text-white/30 w-4"></i>
+                            <div class="flex-1">
+                                <span class="text-white/70 text-sm block">Initialize scanner</span>
+                                <span class="text-white/40 text-xs" id="step-init-detail">Preparing environment...</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3 p-3 rounded-lg" id="step-collect">
+                            <i class="fas fa-circle text-white/30 w-4"></i>
+                            <div class="flex-1">
+                                <span class="text-white/70 text-sm block">Collect code files</span>
+                                <span class="text-white/40 text-xs" id="step-collect-detail">Scanning directory...</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3 p-3 rounded-lg" id="step-static">
+                            <i class="fas fa-circle text-white/30 w-4"></i>
+                            <div class="flex-1">
+                                <span class="text-white/70 text-sm block">Static analysis</span>
+                                <span class="text-white/40 text-xs" id="step-static-detail">Running security rules...</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3 p-3 rounded-lg" id="step-ai">
+                            <i class="fas fa-circle text-white/30 w-4"></i>
+                            <div class="flex-1">
+                                <span class="text-white/70 text-sm block">AI security analysis</span>
+                                <span class="text-white/40 text-xs" id="step-ai-detail">AI model processing...</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3 p-3 rounded-lg" id="step-deps">
+                            <i class="fas fa-circle text-white/30 w-4"></i>
+                            <div class="flex-1">
+                                <span class="text-white/70 text-sm block">Dependency check</span>
+                                <span class="text-white/40 text-xs" id="step-deps-detail">Checking vulnerabilities...</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3 p-3 rounded-lg" id="step-report">
+                            <i class="fas fa-circle text-white/30 w-4"></i>
+                            <div class="flex-1">
+                                <span class="text-white/70 text-sm block">Generate report</span>
+                                <span class="text-white/40 text-xs" id="step-report-detail">Creating final report...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-2">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Statistics -->
+                        <div>
+                            <h3 class="text-lg font-semibold text-white mb-4">Statistics</h3>
+                            <div class="space-y-4">
+                                <div class="bg-white/5 rounded-lg p-4" id="target-card" style="display: none;">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-white/70 text-sm">Target:</span>
+                                        <span class="text-white font-semibold text-sm" id="stat-target" title=""></span>
+                                    </div>
+                                </div>
+                                <div class="bg-white/5 rounded-lg p-4" id="model-card" style="display: none;">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-white/70 text-sm">AI Model:</span>
+                                        <span class="text-white font-semibold text-sm" id="stat-model"></span>
+                                    </div>
+                                </div>
+                                <div class="bg-white/5 rounded-lg p-4" id="files-card" style="display: none;">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-white/70 text-sm">Files found:</span>
+                                        <span class="text-white font-semibold text-sm" id="stat-files"></span>
+                                    </div>
+                                    <div class="mt-2 text-xs text-white/50" id="file-types" style="display: none;">
+                                        <!-- File types will be shown here -->
+                                    </div>
+                                </div>
+                                <div class="bg-white/5 rounded-lg p-4" id="analyzed-card" style="display: none;">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-white/70 text-sm">Files analyzed:</span>
+                                        <span class="text-white font-semibold text-sm" id="stat-analyzed">0</span>
+                                    </div>
+                                    <div class="mt-2 w-full bg-white/10 rounded-full h-2">
+                                        <div class="bg-cyan-500 h-2 rounded-full transition-all duration-300" id="analysis-progress" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                <div class="bg-white/5 rounded-lg p-4" id="vulns-card" style="display: none;">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-white/70 text-sm">Vulnerabilities:</span>
+                                        <span class="text-white font-semibold text-sm" id="stat-vulns">0</span>
+                                    </div>
+                                    <div class="mt-2 flex flex-wrap gap-2 text-xs" id="vuln-breakdown" style="display: none;">
+                                        <span class="text-red-400" id="vuln-critical">0 Critical</span>
+                                        <span class="text-orange-400" id="vuln-high">0 High</span>
+                                        <span class="text-yellow-400" id="vuln-medium">0 Medium</span>
+                                        <span class="text-green-400" id="vuln-low">0 Low</span>
+                                    </div>
+                                </div>
+                                <div class="bg-white/5 rounded-lg p-4">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-white/70 text-sm">Elapsed time:</span>
+                                        <span class="text-white font-semibold text-sm" id="stat-time">0s</span>
+                                    </div>
+                                    <div class="mt-2 text-xs text-white/50" id="estimated-time" style="display: none;">
+                                        Estimated remaining: calculating...
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Current File Being Analyzed -->
+                        <div>
+                            <h3 class="text-lg font-semibold text-white mb-4">Current Analysis</h3>
+                            <div class="space-y-4">
+                                <div class="bg-white/5 rounded-lg p-4" id="current-file-card" style="display: none;">
+                                    <div class="text-sm text-white/70 mb-2">Currently analyzing:</div>
+                                    <div class="text-white font-semibold text-sm" id="current-file"></div>
+                                    <div class="text-xs text-white/50 mt-1" id="current-file-type"></div>
+                                </div>
+                                
+                                <div class="bg-white/5 rounded-lg p-4" id="model-perf-card" style="display: none;">
+                                    <div class="text-sm text-white/70 mb-2">Model Performance:</div>
+                                    <div class="text-xs text-white/60" id="modelPerformance"></div>
+                                    <div class="mt-2 text-xs" id="speed-info" style="display: none;">
+                                        <div class="flex justify-between text-white/50">
+                                            <span>Speed:</span>
+                                            <span id="analysis-speed"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Recent Findings -->
+                                <div class="bg-white/5 rounded-lg p-4" id="findings-card" style="display: none;">
+                                    <div class="text-sm text-white/70 mb-2">Recent Findings:</div>
+                                    <div class="space-y-2 max-h-32 overflow-y-auto" id="recent-findings">
+                                        <div class="text-xs text-white/50">No findings yet...</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Loading State -->
+                                <div class="bg-white/5 rounded-lg p-4" id="loading-state">
+                                    <div class="text-center">
+                                        <div class="inline-flex items-center space-x-2 text-white/60">
+                                            <div class="animate-spin">
+                                                <i class="fas fa-cog text-cyan-400"></i>
+                                            </div>
+                                            <span class="text-sm">Loading analysis data...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Cancel Button -->
+            <div class="text-center mt-8">
+                <a href="/" class="bg-white/10 hover:bg-white/20 text-white px-6 py-2 rounded-xl border border-white/20 transition-colors duration-200">
+                    <i class="fas fa-times mr-2"></i>Cancel Analysis
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const scanId = '{{ scan_id }}';
+        let startTime = Date.now();
+        let progressInterval;
+        let timeInterval;
+        let autoScroll = true;
+        let logEntries = [];
+        let lastAnalyzedFiles = 0;
+        let analysisStartTime = null;
+
+        // Model performance info
+        const modelPerformanceInfo = {
+            'deepseek-r1:14b': 'High accuracy, advanced reasoning, slower inference (~2-5 min)',
+            'llama3.2:latest': 'Balanced performance, fast inference (~30s-2min)',
+            'codellama:latest': 'Code-specialized, good for programming patterns (~1-3min)',
+            'default': 'Custom model - performance may vary'
+        };
+
+        function addLogEntry(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const colors = {
+                'info': 'text-white/70',
+                'success': 'text-green-400',
+                'warning': 'text-yellow-400',
+                'error': 'text-red-400',
+                'finding': 'text-purple-400'
+            };
+            
+            const logEntry = `<div class="${colors[type] || colors.info}">[${timestamp}] ${message}</div>`;
+            logEntries.push(logEntry);
+            
+            // Keep only last 50 entries
+            if (logEntries.length > 50) {
+                logEntries.shift();
+            }
+            
+            document.getElementById('logContent').innerHTML = logEntries.join('');
+            
+            if (autoScroll) {
+                const container = document.getElementById('logContainer');
+                container.scrollTop = container.scrollHeight;
+            }
+        }
+
+        function toggleAutoScroll() {
+            autoScroll = !autoScroll;
+            const btn = document.getElementById('autoScrollBtn');
+            btn.innerHTML = `<i class="fas fa-arrows-alt-v mr-1"></i>Auto-scroll: ${autoScroll ? 'ON' : 'OFF'}`;
+            btn.classList.toggle('bg-cyan-500/20', autoScroll);
+        }
+
+        function updateElapsedTime() {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            document.getElementById('stat-time').textContent = elapsed + 's';
+        }
+
+        function calculateAnalysisSpeed(filesAnalyzed, totalFiles) {
+            if (!analysisStartTime || filesAnalyzed === 0) return 0;
+            const elapsedMinutes = (Date.now() - analysisStartTime) / 60000;
+            if (elapsedMinutes === 0) return 0;
+            return Math.round(filesAnalyzed / elapsedMinutes);
+        }
+
+        function formatTarget(target) {
+            if (!target) return '';
+            
+            // Si c'est une URL, extraire juste le nom du repo
+            if (target.includes('github.com')) {
+                const parts = target.split('/');
+                if (parts.length >= 2) {
+                    return parts[parts.length - 1] || parts[parts.length - 2];
+                }
+            }
+            
+            // Si c'est un chemin local, extraire juste le nom du dossier
+            if (target.includes('/') || target.includes('\\')) {
+                const parts = target.split(/[/\\]/);
+                return parts[parts.length - 1] || parts[parts.length - 2];
+            }
+            
+            // Si trop long, tronquer
+            if (target.length > 25) {
+                return target.substring(0, 22) + '...';
+            }
+            
+            return target;
+        }
+
+        function showCard(cardId) {
+            document.getElementById(cardId).style.display = 'block';
+        }
+
+        function hideCard(cardId) {
+            document.getElementById(cardId).style.display = 'none';
+        }
+
+        function updateProgress() {
+            fetch(`/api/scan/progress/${scanId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.redirect_url) {
+                        // addLogEntry('Analysis complete! Redirecting to results...', 'success');
+                        setTimeout(() => {
+                            window.location.href = data.redirect_url;
+                        }, 2000);
+                        return;
+                    }
+                    
+                    if (data.step === 'error') {
+                        // addLogEntry(`Error: ${data.details?.error || 'Unknown error occurred'}`, 'error');
+                        document.getElementById('progressTitle').textContent = 'Analysis Error';
+                        document.getElementById('progressSubtitle').textContent = data.details?.error || 'Unknown error occurred';
+                        document.getElementById('currentActivity').textContent = 'Error occurred during analysis';
+                        clearInterval(progressInterval);
+                        clearInterval(timeInterval);
+                        return;
+                    }
+                    
+                    // Update progress bar
+                    document.getElementById('progressBar').style.width = data.progress + '%';
+                    document.getElementById('progressPercent').textContent = data.progress + '%';
+                    
+                    // Update current activity with detailed info
+                    const activityMap = {
+                        'initializing': {
+                            title: 'Initializing BeraMind scanner...',
+                            detail: 'Setting up the environment and loading AI model...'
+                        },
+                        'scanner_init': {
+                            title: 'Setting up AI model...',
+                            detail: 'Configuring AI model for security analysis...'
+                        },
+                        'collecting_files': {
+                            title: 'Scanning directory for code files...',
+                            detail: 'Discovering and filtering code files for analysis...'
+                        },
+                        'static_analysis': {
+                            title: 'Running static analysis rules...',
+                            detail: 'Applying security patterns and static analysis rules...'
+                        },
+                        'ai_analysis': {
+                            title: 'AI analyzing code for vulnerabilities...',
+                            detail: 'Deep AI analysis of code for security vulnerabilities...'
+                        },
+                        'dependency_check': {
+                            title: 'Checking dependencies for known vulnerabilities...',
+                            detail: 'Scanning dependencies for known security issues...'
+                        },
+                        'generating_report': {
+                            title: 'Generating security report...',
+                            detail: 'Compiling findings and generating comprehensive report...'
+                        }
+                    };
+                    
+                    const activity = activityMap[data.step] || {
+                        title: 'Processing...',
+                        detail: 'Analysis in progress...'
+                    };
+                    
+                    document.getElementById('currentActivity').textContent = activity.title;
+                    document.getElementById('activityDetails').textContent = activity.detail;
+                    
+                    // Update statistics with more details
+                    if (data.details) {
+                        // Hide loading state once we have data
+                        hideCard('loading-state');
+                        
+                        if (data.details.target) {
+                            const formattedTarget = formatTarget(data.details.target);
+                            document.getElementById('stat-target').textContent = formattedTarget;
+                            document.getElementById('stat-target').title = data.details.target; // Full path in tooltip
+                            showCard('target-card');
+                        }
+                        
+                        if (data.details.model) {
+                            document.getElementById('stat-model').textContent = data.details.model;
+                            document.getElementById('currentModel').textContent = data.details.model;
+                            showCard('model-card');
+                            
+                            const perfInfo = modelPerformanceInfo[data.details.model] || modelPerformanceInfo['default'];
+                            document.getElementById('modelPerformance').textContent = perfInfo;
+                            showCard('model-perf-card');
+                        }
+                        
+                        if (data.details.files_found !== undefined && data.details.files_found > 0) {
+                            document.getElementById('stat-files').textContent = data.details.files_found;
+                            showCard('files-card');
+                            
+                            // Show file types if available
+                            if (data.details.file_types && Object.keys(data.details.file_types).length > 0) {
+                                const fileTypesText = Object.entries(data.details.file_types)
+                                    .map(([type, count]) => `${count} ${type}`)
+                                    .join(', ');
+                                document.getElementById('file-types').textContent = fileTypesText;
+                                document.getElementById('file-types').style.display = 'block';
+                            }
+                        }
+                        
+                        if (data.details.files_analyzed !== undefined) {
+                            const analyzed = data.details.files_analyzed;
+                            const total = data.details.files_found || 1;
+                            
+                            if (analyzed > 0 || total > 0) {
+                                document.getElementById('stat-analyzed').textContent = analyzed;
+                                showCard('analyzed-card');
+                                
+                                // Update analysis progress bar
+                                const progressPercent = total > 0 ? (analyzed / total) * 100 : 0;
+                                document.getElementById('analysis-progress').style.width = progressPercent + '%';
+                                
+                                // Calculate and show analysis speed
+                                if (analyzed > lastAnalyzedFiles && analyzed > 0) {
+                                    if (!analysisStartTime) analysisStartTime = Date.now();
+                                    const speed = calculateAnalysisSpeed(analyzed, total);
+                                    
+                                    if (speed > 0) {
+                                        document.getElementById('analysis-speed').textContent = speed + ' files/min';
+                                        document.getElementById('speed-info').style.display = 'block';
+                                        
+                                        // Estimate remaining time
+                                        const remaining = total - analyzed;
+                                        if (remaining > 0) {
+                                            const estimatedMinutes = Math.ceil(remaining / speed);
+                                            document.getElementById('estimated-time').textContent = 
+                                                `Estimated remaining: ${estimatedMinutes} min`;
+                                            document.getElementById('estimated-time').style.display = 'block';
+                                        }
+                                    }
+                                }
+                                lastAnalyzedFiles = analyzed;
+                            }
+                        }
+                        
+                        // Current file being analyzed
+                        if (data.details.current_file) {
+                            document.getElementById('current-file').textContent = data.details.current_file;
+                            const fileExt = data.details.current_file.split('.').pop();
+                            document.getElementById('current-file-type').textContent = `${fileExt.toUpperCase()} file`;
+                            showCard('current-file-card');
+                        }
+                        
+                        // Vulnerabilities with breakdown
+                        if (data.details.vulnerabilities_found !== undefined) {
+                            const vulnCount = data.details.vulnerabilities_found;
+                            document.getElementById('stat-vulns').textContent = vulnCount;
+                            
+                            if (vulnCount > 0) {
+                                showCard('vulns-card');
+                                
+                                if (data.details.vulnerability_breakdown) {
+                                    const breakdown = data.details.vulnerability_breakdown;
+                                    const hasBreakdown = (breakdown.critical + breakdown.high + breakdown.medium + breakdown.low) > 0;
+                                    
+                                    if (hasBreakdown) {
+                                        document.getElementById('vuln-critical').textContent = `${breakdown.critical || 0} Critical`;
+                                        document.getElementById('vuln-high').textContent = `${breakdown.high || 0} High`;
+                                        document.getElementById('vuln-medium').textContent = `${breakdown.medium || 0} Medium`;
+                                        document.getElementById('vuln-low').textContent = `${breakdown.low || 0} Low`;
+                                        document.getElementById('vuln-breakdown').style.display = 'flex';
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // Recent findings
+                        if (data.details.recent_findings && data.details.recent_findings.length > 0) {
+                            const findingsHTML = data.details.recent_findings
+                                .slice(-5) // Last 5 findings
+                                .map(finding => `
+                                    <div class="text-xs">
+                                        <span class="text-${finding.severity === 'critical' ? 'red' : finding.severity === 'high' ? 'orange' : finding.severity === 'medium' ? 'yellow' : 'green'}-400">
+                                            ${finding.severity.toUpperCase()}:
+                                        </span>
+                                        <span class="text-white/70">${finding.type}</span>
+                                        <div class="text-white/50 ml-2">${finding.file}</div>
+                                    </div>
+                                `)
+                                .join('');
+                            document.getElementById('recent-findings').innerHTML = findingsHTML;
+                            showCard('findings-card');
+                        }
+                    }
+                    
+                    // Update step indicators with details
+                    updateStepIndicators(data.step, data.details);
+                })
+                .catch(error => {
+                    console.error('Error fetching progress:', error);
+                    // addLogEntry('Error fetching progress...', 'error');
+                });
+        }
+
+        // Start progress tracking
+        timeInterval = setInterval(updateElapsedTime, 1000);
+        progressInterval = setInterval(updateProgress, 2000);
+        
+        // Initial setup
+        // addLogEntry('BeraMind Security Scanner initialized', 'success');
+        // addLogEntry('Connecting to AI model...', 'info');
+        updateProgress();
+
+        // Clean up on page unload
+        window.addEventListener('beforeunload', function() {
+            if (progressInterval) clearInterval(progressInterval);
+            if (timeInterval) clearInterval(timeInterval);
+        });
+    </script>
+</body>
+</html>

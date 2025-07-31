@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error - BeraMind</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 bg-fixed">
+    <div class="min-h-full flex items-center justify-center px-4 py-12">
+        <div class="max-w-2xl w-full">
+            <!-- Error Card -->
+            <div class="bg-white/10 backdrop-blur-lg rounded-3xl border border-white/20 shadow-2xl p-8">
+                <div class="text-center mb-8">
+                    <div class="inline-flex items-center justify-center w-20 h-20 bg-red-500/20 rounded-full mb-6">
+                        <i class="fas fa-exclamation-triangle text-4xl text-red-400"></i>
+                    </div>
+                    <h1 class="text-3xl font-bold text-white mb-2">Analysis Error</h1>
+                    <p class="text-white/70">Something went wrong during the setup</p>
+                </div>
+
+                <!-- Error Details -->
+                <div class="bg-white/5 rounded-2xl p-6 border border-white/10 mb-8">
+                    <h2 class="text-xl font-semibold text-white mb-4">Error Details</h2>
+                    <div class="text-white/80">
+                        {{ error|safe }}
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="/" 
+                       class="inline-flex items-center justify-center space-x-2 bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200 hover:scale-105">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Try Again</span>
+                    </a>
+                    
+                    <a href="/history" 
+                       class="inline-flex items-center justify-center space-x-2 bg-white/10 hover:bg-white/20 text-white font-medium px-6 py-3 rounded-xl border border-white/20 backdrop-blur-lg transition-all duration-200 hover:scale-105">
+                        <i class="fas fa-history"></i>
+                        <span>View History</span>
+                    </a>
+                </div>
+
+                <!-- Help Section -->
+                <div class="mt-8 pt-8 border-t border-white/10">
+                    <h3 class="text-lg font-semibold text-white mb-4">Need Help?</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div class="bg-white/5 rounded-lg p-4">
+                            <h4 class="font-medium text-white mb-2">
+                                <i class="fas fa-folder text-purple-400 mr-2"></i>
+                                Local Folders
+                            </h4>
+                            <ul class="text-white/70 space-y-1">
+                                <li>• Use absolute paths</li>
+                                <li>• Check folder permissions</li>
+                                <li>• Verify path exists</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-white/5 rounded-lg p-4">
+                            <h4 class="font-medium text-white mb-2">
+                                <i class="fab fa-github text-cyan-400 mr-2"></i>
+                                GitHub Repos
+                            </h4>
+                            <ul class="text-white/70 space-y-1">
+                                <li>• Use full GitHub URLs</li>
+                                <li>• Check repository access</li>
+                                <li>• Verify repo exists</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

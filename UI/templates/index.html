@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 LangChain BeraMind</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'gradient': 'gradient 8s ease infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        gradient: {
+                            '0%, 100%': { 'background-position': '0% 50%' },
+                            '50%': { 'background-position': '100% 50%' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    },
+                    backgroundSize: {
+                        '400%': '400% 400%',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 bg-fixed">
+    <!-- Hero Section -->
+    <section class="relative px-4 pt-20 pb-16 text-center">
+        <div class="max-w-4xl mx-auto">
+            <!-- Floating Icons -->
+            <div class="absolute inset-0 overflow-hidden pointer-events-none">
+                <div class="absolute top-20 left-10 text-white/20 text-4xl animate-float">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="absolute top-32 right-16 text-white/20 text-3xl animate-float" style="animation-delay: 1s;">
+                    <i class="fas fa-bug"></i>
+                </div>
+                <div class="absolute bottom-20 left-20 text-white/20 text-5xl animate-float" style="animation-delay: 2s;">
+                    <i class="fas fa-code"></i>
+                </div>
+                <div class="absolute bottom-32 right-10 text-white/20 text-3xl animate-float" style="animation-delay: 0.5s;">
+                    <i class="fas fa-robot"></i>
+                </div>
+            </div>
+
+            <div class="relative z-10">
+                <div class="flex flex-row items-center justify-center space-x-4">
+                    <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full">
+                        <i class="fas fa-shield-alt text-white text-2xl"></i>
+                    </div>
+                    <h1 class="text-6xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 mb-6 animate-pulse">
+                        BeraMind
+                    </h1>
+                </div>
+                <p class="text-xl md:text-2xl text-white/90 mb-4 font-light">
+                    AI-Powered Security Analysis for Your Code
+                </p>
+                <p class="text-lg text-white/70 mb-8">
+                    Powered by <span class="text-cyan-400 font-semibold">LangChain</span> + 
+                    <span class="text-purple-400 font-semibold">Ollama</span>
+                </p>
+                <!-- History Button -->
+                <div class="-mb-8">
+                    <a href="/history" class="inline-flex items-center space-x-2 bg-white/10 hover:bg-white/20 text-white font-medium px-6 py-3 rounded-xl border border-white/20 backdrop-blur-lg transition-all duration-200 hover:scale-105">
+                        <i class="fas fa-history"></i>
+                        <span>View History</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto px-4 pb-20">
+        <!-- Scan Form -->
+        <div class="bg-white/10 backdrop-blur-lg rounded-3xl border border-white/20 shadow-2xl p-8 mb-16">
+          <!--   <div class="text-center mb-2">
+                <p class="text-white/70">Choose your analysis type and let AI find vulnerabilities</p>
+            </div> -->
+            
+            <form action="/scan" method="POST" id="scanForm" enctype="multipart/form-data" class="space-y-8">
+                <!-- Scan Type Selection -->
+                <div class="space-y-4">
+                    <label class="text-lg font-semibold text-white block">Analysis Type</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <label class="relative">
+                            <input type="radio" name="scan_type" value="local" checked class="sr-only">
+                            <div class="scan-option bg-white/5 hover:bg-white/10 border-2 border-cyan-500 bg-white/15 rounded-2xl p-6 cursor-pointer transition-all duration-300 hover:scale-105">
+                                <div class="flex items-center space-x-4">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-folder text-3xl text-white"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-white">Local Folder</h3>
+                                        <p class="text-white/70 text-sm">Scan local project directory</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="relative" >
+                            <input type="radio" name="scan_type" value="github" class="sr-only" disabled>
+                            <div class="scan-option bg-white/5 hover:bg-white/10 border-2 border-white/20 rounded-2xl p-6 cursor-not-allowed opacity-50 transition-all duration-300">
+                                <div class="flex items-center space-x-4">
+                                    <div class="flex-shrink-0">
+                                        <i class="fab fa-github text-3xl text-white"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-white">GitHub Repository
+<!-- soon -->
+ <span class="text-red-500  font-medium ml-2">Coming Soon!</span>
+
+                                        </h3>
+                                        <p class="text-white/70 text-sm">Analyze public GitHub repos</p>
+                                  
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+                        
+                 
+                    </div>
+                </div>
+
+                       <!-- GitHub Input -->
+                       <div id="githubInput" class="space-y-2 hidden">
+                        <label for="target" class="text-lg font-semibold text-white block">Repository URL</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <i class="fab fa-github text-white/50"></i>
+                            </div>
+                            <input type="text" id="target" name="target" 
+                                   class="w-full pl-12 pr-4 py-4 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200"
+                                   placeholder="https://github.com/user/repo">
+                        </div>
+                        <p class="text-white/60 text-sm">Enter the GitHub repository URL you want to analyze</p>
+                    </div>
+    
+                    <!-- Local Input -->
+                    <div id="localInput" class="space-y-2">
+                        <label for="localPath" class="text-lg font-semibold text-white block">Local Project Path</label>
+                        
+                        <!-- Path Input with Browse Button -->
+                        <div class="flex space-x-3">
+                            <div class="relative flex-1">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <i class="fas fa-folder text-white/50"></i>
+                                </div>
+                                <input type="text" id="localPath" name="local_path" required
+                                       class="w-full pl-12 pr-4 py-4 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+                                       placeholder="C:\path\to\project or /path/to/project">
+                            </div>
+                          <!--   <button type="button" id="browseFolder" 
+                                    class="bg-white/10 hover:bg-white/20 text-white px-6 py-4 rounded-xl border border-white/20 backdrop-blur-lg transition-all duration-200 hover:scale-105 flex items-center space-x-2">
+                                <i class="fas fa-folder-open"></i>
+                                <span>Browse</span>
+                            </button> -->
+                        </div>
+                        
+                        <!-- Path Format Help -->
+                    <!--     <div class="bg-white/5 rounded-lg p-4 border border-white/10">
+                            <h4 class="text-white font-medium mb-2">
+                                <i class="fas fa-info-circle text-blue-400 mr-2"></i>
+                                Path Format Examples
+                            </h4>
+                            <div class="grid grid-cols-1 gap-2 text-sm">
+                                <div class="flex items-center space-x-2">
+                                    <i class="fab fa-windows text-blue-400"></i>
+                                    <code class="bg-black/20 px-2 py-1 rounded text-cyan-300">C:\Users\nadia\Documents\GitHub\MyProject</code>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <i class="fab fa-linux text-green-400"></i>
+                                    <code class="bg-black/20 px-2 py-1 rounded text-cyan-300">/home/user/projects/myproject</code>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-folder text-orange-400"></i>
+                                    <code class="bg-black/20 px-2 py-1 rounded text-cyan-300">./relative/path</code>
+                                </div>
+                            </div>
+                        </div> -->
+                        
+                        <!-- Quick Actions -->
+                      <!--   <div class="flex space-x-2">
+                            <button type="button" id="useCurrentDir" 
+                                    class="text-xs bg-white/5 hover:bg-white/10 text-white/80 px-3 py-2 rounded-lg border border-white/10 transition-colors duration-200">
+                                <i class="fas fa-map-marker-alt mr-1"></i>
+                                Use Current Directory
+                            </button>
+                            <button type="button" id="pasteFromClipboard" 
+                                    class="text-xs bg-white/5 hover:bg-white/10 text-white/80 px-3 py-2 rounded-lg border border-white/10 transition-colors duration-200">
+                                <i class="fas fa-paste mr-1"></i>
+                                Paste from Clipboard
+                            </button>
+                        </div> -->
+                        
+                        <input type="file" id="folderInput" webkitdirectory multiple class="hidden">
+                    </div>
+
+                <!-- Model Selection -->
+                <div class="space-y-4">
+                    <label for="ai_model" class="text-lg font-semibold text-white block">AI Model</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fas fa-brain text-white/50"></i>
+                        </div>
+                        <input type="text" id="ai_model" name="ai_model" value="llama3.2:latest"
+                               class="w-full pl-12 pr-4 py-4 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200"
+                               placeholder="Enter model name (e.g., llama3.2:latest, deepseek-r1:14b)" required>
+                    </div>
+                    <div class="bg-white/5 rounded-lg p-4 border border-white/10">
+                        <h4 class="text-white font-medium mb-2">
+                            <i class="fas fa-info-circle text-blue-400 mr-2"></i>
+                            Popular Models
+                        </h4>
+                        <div class="grid grid-cols-1 gap-2 text-sm">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-rocket text-purple-400"></i>
+                                    <code class="bg-black/20 px-2 py-1 rounded text-cyan-300">llama3.2:latest</code>
+                                </div>
+                                <span class="text-white/60">Fast & efficient</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-brain text-cyan-400"></i>
+                                    <code class="bg-black/20 px-2 py-1 rounded text-cyan-300">deepseek-r1:14b</code>
+                                </div>
+                                <span class="text-white/60">Best for security</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-star text-orange-400"></i>
+                                    <code class="bg-black/20 px-2 py-1 rounded text-cyan-300">mistral:latest</code>
+                                </div>
+                                <span class="text-white/60">Balanced option</span>
+                            </div>
+                        </div>
+                        <p class="text-white/60 text-xs mt-3">
+                            <i class="fas fa-terminal mr-1"></i>
+                            Install models with: <code class="bg-black/20 px-1 rounded text-cyan-300">ollama pull model-name</code>
+                        </p>
+                    </div>
+                </div>
+
+         
+
+                <!-- Advanced Options -->
+                <div class="space-y-4">
+                    <button type="button" id="advancedToggle" 
+                            class="flex items-center space-x-2 text-white/80 hover:text-white transition-colors duration-200">
+                        <i class="fas fa-cog"></i>
+                        <span>Advanced Options</span>
+                        <i class="fas fa-chevron-down transform transition-transform duration-200" id="advancedArrow"></i>
+                    </button>
+                    
+                    <div id="advancedOptions" class="hidden space-y-4 bg-white/5 rounded-xl p-6 border border-white/10">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" id="deepScan" name="deep_scan" 
+                                       class="w-5 h-5 text-cyan-500 bg-white/10 border-white/20 rounded focus:ring-cyan-500">
+                                <span class="text-white">Deep Analysis</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer">
+                                <input type="checkbox" id="includeDeps" name="include_deps" checked
+                                       class="w-5 h-5 text-purple-500 bg-white/10 border-white/20 rounded focus:ring-purple-500">
+                                <span class="text-white">Analyze Dependencies</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" 
+                        class="w-full bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white font-semibold py-4 px-8 rounded-xl transform transition-all duration-200 hover:scale-105 hover:shadow-2xl">
+                    <i class="fas fa-play mr-2"></i>
+                    Start AI Security Analysis
+                </button>
+            </form>
+        </div>
+
+        <!-- Features Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            <div class="text-center group">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-2xl mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-robot text-4xl text-cyan-400"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-3">Advanced AI Analysis</h3>
+                <p class="text-white/70">Powered by DeepSeek-R1 and LangChain for intelligent code analysis</p>
+            </div>
+            
+            <div class="text-center group">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-2xl mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-shield-alt text-4xl text-purple-400"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-3">OWASP Top 10</h3>
+                <p class="text-white/70">Detects the most critical security vulnerabilities</p>
+            </div>
+            
+            <div class="text-center group">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-pink-500/20 to-cyan-500/20 rounded-2xl mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-chart-bar text-4xl text-pink-400"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-3">Detailed Reports</h3>
+                <p class="text-white/70">Comprehensive analysis with actionable recommendations</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Modal -->
+    <div id="loadingModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center">
+        <div class="bg-white/10 backdrop-blur-lg rounded-3xl border border-white/20 p-8 max-w-2xl mx-4 w-full">
+            <div class="text-center mb-8">
+                <div class="relative inline-flex items-center justify-center w-20 h-20 mb-6">
+                    <div class="absolute inset-0 rounded-full border-4 border-cyan-500/30"></div>
+                    <div class="absolute inset-0 rounded-full border-4 border-t-cyan-500 animate-spin"></div>
+                    <i class="fas fa-shield-alt text-2xl text-white"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-white mb-2" id="progressTitle">AI Analysis in Progress...</h3>
+                <p class="text-white/70" id="progressSubtitle">DeepSeek-R1 is analyzing your code for vulnerabilities</p>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="mb-8">
+                <div class="bg-white/10 rounded-full h-3 overflow-hidden">
+                    <div class="bg-gradient-to-r from-cyan-500 to-purple-500 h-full rounded-full transition-all duration-500" 
+                         id="progressBar" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <!-- Current Activity -->
+            <div class="bg-white/5 rounded-2xl p-6 mb-6">
+                <div class="flex items-center space-x-3">
+                    <div class="animate-spin">
+                        <i class="fas fa-cog text-cyan-400"></i>
+                    </div>
+                    <span class="text-white" id="currentActivity">Initializing AI scanner...</span>
+                </div>
+            </div>
+            
+            <!-- Progress Steps -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-4">Analysis Steps</h4>
+                    <div class="space-y-3" id="progressSteps">
+                        <div class="flex items-center space-x-3" id="step-init">
+                            <i class="fas fa-circle text-white/30 w-4"></i>
+                            <span class="text-white/70 text-sm">Initialize scanner</span>
+                        </div>
+                        <div class="flex items-center space-x-3" id="step-collect">
+                            <i class="fas fa-circle text-white/30 w-4"></i>
+                            <span class="text-white/70 text-sm">Collect code files</span>
+                        </div>
+                        <div class="flex items-center space-x-3" id="step-static">
+                            <i class="fas fa-circle text-white/30 w-4"></i>
+                            <span class="text-white/70 text-sm">Static analysis</span>
+                        </div>
+                        <div class="flex items-center space-x-3" id="step-ai">
+                            <i class="fas fa-circle text-white/30 w-4"></i>
+                            <span class="text-white/70 text-sm">AI security analysis</span>
+                        </div>
+                        <div class="flex items-center space-x-3" id="step-deps">
+                            <i class="fas fa-circle text-white/30 w-4"></i>
+                            <span class="text-white/70 text-sm">Dependency check</span>
+                        </div>
+                        <div class="flex items-center space-x-3" id="step-report">
+                            <i class="fas fa-circle text-white/30 w-4"></i>
+                            <span class="text-white/70 text-sm">Generate report</span>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-4">Statistics</h4>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-white/70">Files found:</span>
+                            <span class="text-white font-semibold" id="stat-files">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-white/70">Files analyzed:</span>
+                            <span class="text-white font-semibold" id="stat-analyzed">0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-white/70">Vulnerabilities:</span>
+                            <span class="text-white font-semibold" id="stat-vulns">0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-white/70">Elapsed time:</span>
+                            <span class="text-white font-semibold" id="stat-time">0s</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Model Info Modal -->
+    <div id="modelInfoModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center">
+        <div class="bg-white/10 backdrop-blur-lg rounded-3xl border border-white/20 p-8 max-w-2xl mx-4 w-full">
+            <div class="flex justify-between items-start mb-6">
+                <h3 class="text-2xl font-bold text-white" id="modalTitle">Model Information</h3>
+                <button onclick="closeModelInfo()" class="text-white/60 hover:text-white">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            
+            <div id="modalContent" class="text-white/80 space-y-4">
+                <!-- Dynamic content will be inserted here -->
+            </div>
+            
+            <div class="mt-8 flex justify-end space-x-4">
+                <button onclick="closeModelInfo()" class="bg-white/10 hover:bg-white/20 text-white px-6 py-2 rounded-xl border border-white/20 transition-colors duration-200">
+                    Close
+                </button>
+                <button onclick="installModel()" id="installBtn" class="bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white px-6 py-2 rounded-xl transition-all duration-200">
+                    Copy Install Command
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales pour le suivi
+        let progressInterval;
+        let timeInterval;
+        let startTime;
+        let scanId;
+
+        // Enhanced UI interactions for scan type
+        document.querySelectorAll('input[name="scan_type"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                // Update visual selection
+                document.querySelectorAll('.scan-option').forEach(option => {
+                    option.classList.remove('border-cyan-500', 'bg-white/15');
+                    option.classList.add('border-white/20');
+                });
+                
+                const selectedOption = this.closest('label').querySelector('.scan-option');
+                selectedOption.classList.add('border-cyan-500', 'bg-white/15');
+                selectedOption.classList.remove('border-white/20');
+                
+                // Toggle inputs
+                const githubInput = document.getElementById('githubInput');
+                const localInput = document.getElementById('localInput');
+                const targetInput = document.getElementById('target');
+                const localPathInput = document.getElementById('localPath');
+                
+                if (this.value === 'github') {
+                    githubInput.classList.remove('hidden');
+                    localInput.classList.add('hidden');
+                    targetInput.required = true;
+                    localPathInput.required = false;
+                } else {
+                    githubInput.classList.add('hidden');
+                    localInput.classList.remove('hidden');
+                    targetInput.required = false;
+                    localPathInput.required = true;
+                }
+            });
+        });
+
+        // Fixed Advanced Options Toggle
+        document.getElementById('advancedToggle').addEventListener('click', function() {
+            const options = document.getElementById('advancedOptions');
+            const arrow = document.getElementById('advancedArrow');
+            
+            if (options.classList.contains('hidden')) {
+                options.classList.remove('hidden');
+                arrow.style.transform = 'rotate(180deg)';
+            } else {
+                options.classList.add('hidden');
+                arrow.style.transform = 'rotate(0deg)';
+            }
+        });
+
+        // Handle folder selection
+        document.getElementById('folderInput').addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                const firstFile = e.target.files[0];
+                const relativePath = firstFile.webkitRelativePath;
+                
+                if (relativePath) {
+                    const folderName = relativePath.split('/')[0];
+                    document.getElementById('localPath').value = folderName;
+                } else {
+                    alert('Unable to detect folder path. Please enter the path manually.');
+                }
+            }
+        });
+
+        // Model information data
+        const modelInfo = {
+            'llama3.2:latest': {
+                title: 'Llama 3.2 Latest',
+                description: 'Fast and efficient model suitable for quick security scans.',
+                features: [
+                    'Fast inference speed',
+                    'Good general-purpose capabilities',
+                    'Balanced performance/resource usage',
+                    'Suitable for most security checks'
+                ],
+                requirements: [
+                    'RAM: 8GB+ recommended',
+                    'Storage: 2.0 GB free space',
+                    'GPU: Optional'
+                ],
+                installCommand: 'ollama pull llama3.2:latest',
+                pros: ['Fast analysis', 'Low resource usage', 'Good balance'],
+                cons: ['Lower accuracy than DeepSeek', 'Less specialized for security']
+            },
+            'deepseek-r1:14b': {
+                title: 'DeepSeek-R1 14B',
+                description: 'State-of-the-art reasoning model optimized for complex analysis tasks.',
+                features: [
+                    'Advanced reasoning capabilities with <thinking> tags',
+                    'Excellent for security vulnerability detection',
+                    'High accuracy in code analysis',
+                    'Best performance for complex security patterns'
+                ],
+                requirements: [
+                    'RAM: 16GB+ recommended',
+                    'Storage: 9.0 GB free space',
+                    'GPU: Optional but recommended for speed'
+                ],
+                installCommand: 'ollama pull deepseek-r1:14b',
+                pros: ['Highest accuracy', 'Best reasoning', 'Comprehensive analysis'],
+                cons: ['Slower inference', 'Higher memory usage', 'Requires more resources']
+            },
+            'custom': {
+                title: 'Custom Model',
+                description: 'Use any Ollama-compatible model of your choice.',
+                features: [
+                    'Flexibility to use any available model',
+                    'Support for experimental models',
+                    'Custom fine-tuned models',
+                    'Community models'
+                ],
+                requirements: [
+                    'Model must be Ollama-compatible',
+                    'Verify model is installed locally',
+                    'Check model capabilities for security analysis'
+                ],
+                installCommand: 'ollama pull [your-model-name]',
+                pros: ['Maximum flexibility', 'Use latest models', 'Custom configurations'],
+                cons: ['Uncertain performance', 'Manual verification needed']
+            }
+        };
+
+        let currentModel = '';
+
+        // Info button handlers
+        document.querySelectorAll('.info-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const model = this.dataset.model;
+                showModelInfo(model);
+            });
+        });
+
+        function showModelInfo(model) {
+            currentModel = model;
+            const info = modelInfo[model];
+            const modal = document.getElementById('modelInfoModal');
+            const title = document.getElementById('modalTitle');
+            const content = document.getElementById('modalContent');
+            
+            title.textContent = info.title;
+            
+            content.innerHTML = `
+                <div class="space-y-6">
+                    <div>
+                        <h4 class="text-lg font-semibold text-white mb-2">Description</h4>
+                        <p class="text-white/70">${info.description}</p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-lg font-semibold text-white mb-3">Key Features</h4>
+                        <ul class="space-y-2">
+                            ${info.features.map(feature => `
+                                <li class="flex items-start space-x-2">
+                                    <i class="fas fa-check text-green-400 mt-1 text-sm"></i>
+                                    <span class="text-white/70 text-sm">${feature}</span>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <h4 class="text-lg font-semibold text-white mb-3">Requirements</h4>
+                            <ul class="space-y-1">
+                                ${info.requirements.map(req => `
+                                    <li class="flex items-center space-x-2">
+                                        <i class="fas fa-circle text-cyan-400 text-xs"></i>
+                                        <span class="text-white/60 text-sm">${req}</span>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                        
+                        <div>
+                            <h4 class="text-lg font-semibold text-white mb-3">Pros & Cons</h4>
+                            <div class="space-y-2">
+                                ${info.pros.map(pro => `
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-plus text-green-400 text-xs"></i>
+                                        <span class="text-white/60 text-sm">${pro}</span>
+                                    </div>
+                                `).join('')}
+                                ${info.cons.map(con => `
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-minus text-red-400 text-xs"></i>
+                                        <span class="text-white/60 text-sm">${con}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-black/20 rounded-xl p-4 border border-white/10">
+                        <h4 class="text-lg font-semibold text-white mb-2">Installation Command</h4>
+                        <div class="flex items-center space-x-2">
+                            <code class="flex-1 bg-black/30 px-3 py-2 rounded text-cyan-400 text-sm font-mono">
+                                ${info.installCommand}
+                            </code>
+                            <button onclick="copyToClipboard('${info.installCommand}')" 
+                                    class="bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded transition-colors duration-200">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <p class="text-white/60 text-xs mt-2">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Run this command in your terminal to install the model
+                        </p>
+                    </div>
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeModelInfo() {
+            const modal = document.getElementById('modelInfoModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function installModel() {
+            const info = modelInfo[currentModel];
+            copyToClipboard(info.installCommand);
+            
+            // Show success message
+            const btn = document.getElementById('installBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check mr-2"></i>Copied!';
+            btn.classList.add('bg-green-500', 'hover:bg-green-600');
+            btn.classList.remove('bg-gradient-to-r', 'from-cyan-500', 'to-purple-500', 'hover:from-cyan-600', 'hover:to-purple-600');
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.classList.remove('bg-green-500', 'hover:bg-green-600');
+                btn.classList.add('bg-gradient-to-r', 'from-cyan-500', 'to-purple-500', 'hover:from-cyan-600', 'hover:to-purple-600');
+            }, 2000);
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                console.log('Command copied to clipboard');
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+
+        // Enhanced form submission with real-time progress
+        document.getElementById('scanForm').addEventListener('submit', function(e) {
+            const scanType = document.querySelector('input[name="scan_type"]:checked').value;
+            const target = document.getElementById('target').value.trim();
+            const localPath = document.getElementById('localPath').value.trim();
+            
+            // Validation
+            if (scanType === 'github') {
+                if (!target || !target.includes('github.com')) {
+                    e.preventDefault();
+                    alert('Please enter a valid GitHub repository URL');
+                    return;
+                }
+            } else if (scanType === 'local') {
+                if (!localPath) {
+                    e.preventDefault();
+                    alert('Please select a local folder or enter the path manually');
+                    return;
+                }
+            }
+            
+            // Start progress tracking
+            startProgressTracking();
+        });
+
+        function startProgressTracking() {
+            // Show modal
+            const loadingModal = document.getElementById('loadingModal');
+            loadingModal.classList.remove('hidden');
+            loadingModal.classList.add('flex');
+            
+            // Initialize
+            startTime = Date.now();
+            scanId = 'temp_' + Date.now();
+            
+            // Start time counter
+            timeInterval = setInterval(updateElapsedTime, 1000);
+            
+            // Start progress simulation (will be replaced by real API calls)
+            progressInterval = setInterval(simulateProgress, 2000);
+        }
+
+        function updateElapsedTime() {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            document.getElementById('stat-time').textContent = elapsed + 's';
+        }
+
+        function simulateProgress() {
+            // This simulates the analysis progress
+            // In a real implementation, this would call your progress API
+            const steps = [
+                { id: 'step-init', activity: 'Initializing BeraMind...', progress: 10 },
+                { id: 'step-collect', activity: 'Scanning directory for code files...', progress: 25, files: Math.floor(Math.random() * 50) + 10 },
+                { id: 'step-static', activity: 'Running static analysis rules...', progress: 45 },
+                { id: 'step-ai', activity: 'AI analyzing code for vulnerabilities...', progress: 70, analyzed: Math.floor(Math.random() * 20) + 5 },
+                { id: 'step-deps', activity: 'Checking dependencies for known vulnerabilities...', progress: 85 },
+                { id: 'step-report', activity: 'Generating security report...', progress: 95, vulns: Math.floor(Math.random() * 10) }
+            ];
+            
+            const currentStep = Math.floor((Date.now() - startTime) / 3000) % steps.length;
+            const step = steps[currentStep];
+            
+            // Update progress bar
+            document.getElementById('progressBar').style.width = step.progress + '%';
+            
+            // Update current activity
+            document.getElementById('currentActivity').textContent = step.activity;
+            
+            // Update step status
+            document.querySelectorAll('#progressSteps div').forEach(div => {
+                const icon = div.querySelector('i');
+                icon.className = 'fas fa-circle text-white/30 w-4';
+            });
+            
+            // Mark completed steps
+            steps.slice(0, currentStep + 1).forEach(s => {
+                const stepElement = document.getElementById(s.id);
+                if (stepElement) {
+                    const icon = stepElement.querySelector('i');
+                    icon.className = 'fas fa-check-circle text-cyan-400 w-4';
+                }
+            });
+            
+            // Mark current step
+            const currentStepElement = document.getElementById(step.id);
+            if (currentStepElement) {
+                const icon = currentStepElement.querySelector('i');
+                icon.className = 'fas fa-spinner fa-spin text-cyan-400 w-4';
+            }
+            
+            // Update statistics
+            if (step.files) document.getElementById('stat-files').textContent = step.files;
+            if (step.analyzed) document.getElementById('stat-analyzed').textContent = step.analyzed;
+            if (step.vulns) document.getElementById('stat-vulns').textContent = step.vulns;
+            
+            // Complete after all steps
+            if (currentStep >= steps.length - 1) {
+                setTimeout(() => {
+                    document.getElementById('progressBar').style.width = '100%';
+                    document.getElementById('currentActivity').textContent = 'Analysis complete! Redirecting...';
+                    const spinner = document.getElementById('activitySpinner');
+                    if (spinner) spinner.style.display = 'none';
+                }, 2000);
+            }
+        }
+
+        // Clean up intervals when page unloads
+        window.addEventListener('beforeunload', function() {
+            if (progressInterval) clearInterval(progressInterval);
+            if (timeInterval) clearInterval(timeInterval);
+        });
+
+        // Enhanced folder browsing
+        document.getElementById('browseFolder').addEventListener('click', function() {
+            document.getElementById('folderInput').click();
+        });
+
+        // Handle folder selection
+        document.getElementById('folderInput').addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                const firstFile = e.target.files[0];
+                const relativePath = firstFile.webkitRelativePath;
+                
+                if (relativePath) {
+                    // Extract the root folder path
+                    const pathParts = relativePath.split('/');
+                    const folderName = pathParts[0];
+                    
+                    // Try to construct the full path
+                    if (firstFile.path) {
+                        // Chrome/Edge avec path complet
+                        const fullPath = firstFile.path.substring(0, firstFile.path.lastIndexOf('/'));
+                        document.getElementById('localPath').value = fullPath;
+                    } else {
+                        // Fallback: utiliser le nom du dossier
+                        document.getElementById('localPath').value = folderName;
+                        
+                        // Afficher un message d'aide
+                        showPathHint(folderName);
+                    }
+                } else {
+                    alert('Unable to detect folder path. Please enter the path manually.');
+                }
+            }
+        });
+
+        // Use current directory button
+        document.getElementById('useCurrentDir').addEventListener('click', function() {
+            document.getElementById('localPath').value = '.';
+        });
+
+        // Paste from clipboard button
+        document.getElementById('pasteFromClipboard').addEventListener('click', async function() {
+            try {
+                const text = await navigator.clipboard.readText();
+                if (text.trim()) {
+                    document.getElementById('localPath').value = text.trim();
+                } else {
+                    alert('Clipboard is empty');
+                }
+            } catch (err) {
+                console.error('Failed to read clipboard:', err);
+                alert('Unable to read from clipboard. Please paste manually.');
+            }
+        });
+
+        function showPathHint(folderName) {
+            // Créer une notification temporaire
+            const hint = document.createElement('div');
+            hint.className = 'fixed top-4 right-4 bg-yellow-500/90 text-black px-4 py-2 rounded-lg shadow-lg z-50 max-w-md';
+            hint.innerHTML = `
+                <div class="flex items-start space-x-2">
+                    <i class="fas fa-lightbulb text-yellow-800 mt-1"></i>
+                    <div>
+                        <p class="font-medium">Folder detected: <code>${folderName}</code></p>
+                        <p class="text-sm">Please enter the full path manually if this is not correct.</p>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" class="text-yellow-800 hover:text-yellow-900">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(hint);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (hint.parentElement) {
+                    hint.remove();
+                }
+            }, 5000);
+        }
+
+        // Path validation en temps réel
+        document.getElementById('localPath').addEventListener('input', function() {
+            const path = this.value.trim();
+            const container = this.closest('.space-y-2');
+            
+            // Supprimer les anciens messages de validation
+            const existingHint = container.querySelector('.path-validation');
+            if (existingHint) {
+                existingHint.remove();
+            }
+            
+            if (path && path.length > 3) {
+                // Ajouter un indicateur de validation
+                const validationHint = document.createElement('div');
+                validationHint.className = 'path-validation text-xs text-white/60 flex items-center space-x-2';
+                validationHint.innerHTML = `
+                    <i class="fas fa-info-circle text-blue-400"></i>
+                    <span>Path will be validated when you start the scan</span>
+                `;
+                
+                container.appendChild(validationHint);
+            }
+        });
+    </script>
+</body>
+</html>
